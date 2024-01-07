@@ -5,18 +5,27 @@ const app = express();
 app.use(express.json());
 
 // get
-app.get("/home", (req, res) => {
-  res.contentType("application/html");
-  res.status(200).send("<h1>Welcome!!</h1>");
-});
+app.get("/users", async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const perPage = req.query.perPage || 10;
+    const totalUsers = await UserModel.countDocuments();
 
-app.get("/users", (req, res) => {
-  const users = [
-    { name: "John", email: "john@example.com" },
-    { name: "John2", email: "john@example2.com" },
-  ];
+    const users = await UserModel.find({})
+      .skip((page - 1) * perPage)
+      .limit(perPage);
 
-  res.status(200).json(users);
+    const data = {
+      current_page: page,
+      data: users,
+      per_page: perPage,
+      to: (page - 1) * perPage + users.length,
+      total: totalUsers,
+    };
+    res.status(200).json(data);
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
 });
 
 //post
