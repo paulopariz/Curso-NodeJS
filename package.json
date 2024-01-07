@@ -4,7 +4,7 @@
   "description": "curso de node",
   "main": "index.js",
   "scripts": {
-    "start:dev": "node index.js"
+    "start:dev": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
