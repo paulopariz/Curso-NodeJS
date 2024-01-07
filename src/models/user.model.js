@@ -21,6 +21,20 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 7,
   },
+
+  created_at: {
+    type: Date,
+    default: Date.now,
+  },
+  updated_at: {
+    type: Date,
+    default: null,
+  },
+});
+
+userSchema.pre("save", function (next) {
+  this.updated_at = new Date();
+  next();
 });
 
 const UserModel = mongoose.model("User", userSchema);
