@@ -28,7 +28,7 @@ app.get("/users", async (req, res) => {
     };
     res.status(200).json(data);
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).json({ message: error.messge });
   }
 });
 
@@ -49,7 +49,7 @@ app.get("/user/:id", async (req, res) => {
 
     return res.status(200).json(user);
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).json({ message: error.messge });
   }
 });
 
@@ -66,7 +66,7 @@ app.post("/user", async (req, res) => {
     const user = await UserModel.create(req.body);
     res.status(201).json([{ user, message: "Usuário criado com sucesso." }]);
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({ message: error.messge });
   }
 });
 
@@ -82,7 +82,7 @@ app.put("/user/:id", async (req, res) => {
     // verifica se existe o usuario
     const user = await UserModel.findByIdAndUpdate(id, req.body, { new: true });
     if (!user) {
-      return res.status(400).json({ message: "Usuário não encontrado." });
+      return res.status(404).json({ message: "Usuário não encontrado." });
     }
 
     //verifica se já existe o usario com o mesmo email
@@ -98,7 +98,27 @@ app.put("/user/:id", async (req, res) => {
       .status(200)
       .json([{ user, message: "Usuário atualizado com sucesso." }]);
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({ message: error.messge });
+  }
+});
+
+//delete user
+app.delete("/user/:id", async (req, res) => {
+  try {
+    // verifica se existe o id
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "ID inválido." });
+    }
+
+    // verifica se existe o usuario
+    const user = await UserModel.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ message: "Usuário não encontrado." });
+    }
+    res.status(200).json([{ user, message: "Usuário deletado com sucesso." }]);
+  } catch (error) {
+    res.status(500).json({ message: error.messge });
   }
 });
 
